@@ -471,7 +471,7 @@
   </script>
 
   <script>
-  /* Circuit-board background: PCB traces in left/right bands with blue/red/yellow pulses */
+  /* Circuit-board background: PCB traces in side bands (top/bottom on phones) with blue/red/yellow pulses */
   (function () {
     const canvas = document.getElementById('chip');
     if (!canvas) return;
@@ -484,7 +484,7 @@
       { r: 255, g: 194, b: 31  }, // yellow
     ];
 
-    let W, H, DPR, cell, bandW, paths = [], chips = [], pulses = [], base, mask;
+    let W, H, DPR, cell, bandW, horizontal, paths = [], chips = [], pulses = [], base, mask;
     let traceColor, padColor, chipColor;
     const CHAMFER = 7;
 
@@ -499,9 +499,9 @@
     function unit(a, b) { const d = dist(a, b) || 1; return { x: (b.x - a.x) / d, y: (b.y - a.y) / d }; }
     function lerp(a, b, t) { return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }; }
 
-    function makePath(xMinCell, xMaxCell, rows) {
+    function makePath(xMinCell, xMaxCell, yMinCell, yMaxCell) {
       let cx = xMinCell + ((Math.random() * (xMaxCell - xMinCell)) | 0);
-      let cy = (Math.random() * rows) | 0;
+      let cy = yMinCell + ((Math.random() * (yMaxCell - yMinCell)) | 0);
       const pts = [{ x: cx * cell, y: cy * cell }];
       const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
       let d = dirs[(Math.random() * 4) | 0];
@@ -513,7 +513,7 @@
         }
         const len = 1 + ((Math.random() * 4) | 0);
         let nx = Math.max(xMinCell, Math.min(xMaxCell, cx + d[0] * len));
-        let ny = Math.max(0, Math.min(rows, cy + d[1] * len));
+        let ny = Math.max(yMinCell, Math.min(yMaxCell, cy + d[1] * len));
         if (nx === cx && ny === cy) continue;
         cx = nx; cy = ny;
         pts.push({ x: cx * cell, y: cy * cell });
@@ -560,10 +560,10 @@
       return out;
     }
 
-    function makeChip(xMin, xMax, rows) {
+    function makeChip(xMin, xMax, yMin, yMax) {
       const s = cell * (1.4 + Math.random());
       const x = xMin + Math.random() * Math.max(1, (xMax - xMin - s));
-      const y = Math.random() * Math.max(1, (rows * cell - s));
+      const y = yMin + Math.random() * Math.max(1, (yMax - yMin - s));
       return { x, y, s };
     }
 
@@ -601,13 +601,18 @@
     }
 
     function buildMask() {
-      const g = ctx.createLinearGradient(0, 0, W, 0);
+      // Fade the bands into the page along whichever axis they run:
+      // top/bottom (vertical fade) on phones, left/right (horizontal fade) otherwise.
+      const axis = horizontal ? H : W;
+      const g = horizontal
+        ? ctx.createLinearGradient(0, 0, 0, H)
+        : ctx.createLinearGradient(0, 0, W, 0);
       const fadeIn = bandW, fadeStart = bandW * 0.62;
       g.addColorStop(0, 'rgba(0,0,0,1)');
-      g.addColorStop(Math.max(0, fadeStart / W), 'rgba(0,0,0,1)');
-      g.addColorStop(fadeIn / W, 'rgba(0,0,0,0)');
-      g.addColorStop((W - fadeIn) / W, 'rgba(0,0,0,0)');
-      g.addColorStop((W - fadeStart) / W, 'rgba(0,0,0,1)');
+      g.addColorStop(Math.max(0, fadeStart / axis), 'rgba(0,0,0,1)');
+      g.addColorStop(fadeIn / axis, 'rgba(0,0,0,0)');
+      g.addColorStop((axis - fadeIn) / axis, 'rgba(0,0,0,0)');
+      g.addColorStop((axis - fadeStart) / axis, 'rgba(0,0,0,1)');
       g.addColorStop(1, 'rgba(0,0,0,1)');
       mask = g;
     }
@@ -620,19 +625,34 @@
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
       cell = 34;
-      bandW = W < 640 ? Math.min(110, W * 0.26) : Math.min(300, Math.max(180, W * 0.24));
+      // On phones, run the circuit bands across the top and bottom instead of the sides.
+      horizontal = W < 640;
       const rows = Math.ceil(H / cell);
-      const leftMax = Math.floor(bandW / cell);
-      const rightMin = Math.floor((W - bandW) / cell);
-      const rightMax = Math.ceil(W / cell);
-      const perBand = Math.min(46, Math.max(12, Math.round((bandW * H) / 9000)));
+      const cols = Math.ceil(W / cell);
 
       paths = []; chips = [];
-      for (let i = 0; i < perBand; i++) {
-        const l = makePath(0, leftMax, rows); if (l) paths.push(l);
-        const r = makePath(rightMin, rightMax, rows); if (r) paths.push(r);
+
+      if (horizontal) {
+        bandW = Math.min(140, Math.max(80, H * 0.16));
+        const topMax = Math.floor(bandW / cell);
+        const bottomMin = Math.floor((H - bandW) / cell);
+        const perBand = Math.min(46, Math.max(12, Math.round((bandW * W) / 9000)));
+        for (let i = 0; i < perBand; i++) {
+          const t = makePath(0, cols, 0, topMax); if (t) paths.push(t);
+          const b = makePath(0, cols, bottomMin, rows); if (b) paths.push(b);
+        }
+        chips.push(makeChip(0, W, 0, bandW), makeChip(0, W, H - bandW, H));
+      } else {
+        bandW = Math.min(300, Math.max(180, W * 0.24));
+        const leftMax = Math.floor(bandW / cell);
+        const rightMin = Math.floor((W - bandW) / cell);
+        const perBand = Math.min(46, Math.max(12, Math.round((bandW * H) / 9000)));
+        for (let i = 0; i < perBand; i++) {
+          const l = makePath(0, leftMax, 0, rows); if (l) paths.push(l);
+          const r = makePath(rightMin, cols, 0, rows); if (r) paths.push(r);
+        }
+        chips.push(makeChip(0, bandW, 0, H), makeChip(W - bandW, W, 0, H));
       }
-      chips.push(makeChip(0, bandW, rows), makeChip(W - bandW, W, rows));
 
       themeColors(); buildBase(); buildMask();
 
