@@ -158,6 +158,26 @@
     max-width: 60ch;
   }
 
+  .about {
+    margin-top: clamp(2.5rem, 6vh, 4rem);
+    max-width: 68ch;
+    text-align: left;
+  }
+
+  .about h2 {
+    color: var(--blue);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+    letter-spacing: -0.01em;
+    margin-bottom: 1rem;
+  }
+
+  .about p {
+    color: var(--text);
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    line-height: 1.7;
+  }
+
   .cards {
     margin-top: clamp(2.5rem, 6vh, 4.5rem);
     width: 100%;
@@ -178,7 +198,16 @@
     border-radius: 14px;
     padding: 1.6rem 1.5rem 1.75rem;
     min-height: 150px;
+    overflow: hidden;
     transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .card-img {
+    width: calc(100% + 3rem);
+    margin: -1.6rem -1.5rem 1.1rem;
+    height: 140px;
+    object-fit: cover;
+    display: block;
   }
 
   .card:hover,
@@ -265,8 +294,14 @@
     <h1>MTU Cybersecurity Society</h1>
     <p class="tagline">Cybersecurity Society at MTU is a community for students interested in cybersecurity, ethical hacking, offensive security, and cryptography. Join us to learn, collaborate, and explore the world of digital security.</p>
 
+    <section class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">About Us</h2>
+      <p>MTU is one of Ireland's leading cybersecurity hubs, home to Cork's Nimbus Research Centre and its national Cyber Range and prototyping labs. Through dedicated degrees and the &euro;7M Cyber Innovate programme, MTU is training the next generation of cybersecurity innovators. The MTU Cybersecurity Society brings that world to students with hands-on skills, CTFs, and real connections to Ireland's cyber industry. At its heart, the society is about people; creating a space where students connect, collaborate, and grow together, with no experience required. From beginners to seasoned hackers, we're a community built on curiosity, teamwork, and a shared drive to learn. Join us, and help shape the next generation of cyber talent at MTU.</p>
+    </section>
+
     <nav class="cards" aria-label="Main">
       <a class="card" href="events.html">
+        <img class="card-img" src="img/home/events.png" alt="Students at an MTU Cybersecurity Society event">
         <span class="card-title">Events</span>
         <span class="card-desc">Workshops, CTFs, and talks. See what's coming up.</span>
         <span class="card-arrow">View events &rarr;</span>
