@@ -286,17 +286,34 @@
   }
 
   /* Cyber threat map */
+  :root {
+    --map-bg: #eef1f7;
+    --map-border: rgba(20, 22, 26, 0.14);
+    --map-inner-border: rgba(20, 22, 26, 0.10);
+    --map-iframe-bg: #eef1f7;
+    --map-footer: #6b7280;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --map-bg: #0b0f19;
+      --map-border: #1e293b;
+      --map-inner-border: #0f172a;
+      --map-iframe-bg: #000;
+      --map-footer: #64748b;
+    }
+  }
+
   .threat-map-card {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 680px;
+    max-width: 1040px;
     margin: clamp(2.5rem, 6vh, 4rem) auto 0;
-    background-color: #0b0f19;
-    border: 1px solid #1e293b;
+    background-color: var(--map-bg);
+    border: 1px solid var(--map-border);
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.3);
   }
 
   .map-header {
@@ -308,8 +325,9 @@
 
   .map-header h3 {
     margin: 0;
-    color: #38bdf8;
-    font-family: 'Courier New', monospace;
+    color: var(--blue);
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-weight: 600;
     font-size: 0.95rem;
     letter-spacing: 2px;
   }
@@ -330,27 +348,30 @@
   .iframe-wrapper {
     position: relative;
     width: 100%;
-    padding-bottom: 75%;
-    height: 0;
+    aspect-ratio: 1 / 1;            /* square on phones */
     overflow: hidden;
     border-radius: 6px;
-    border: 1px solid #0f172a;
+    border: 1px solid var(--map-inner-border);
+  }
+
+  @media (min-width: 720px) {
+    .iframe-wrapper { aspect-ratio: 16 / 9; }  /* rectangular on larger screens */
   }
 
   .iframe-wrapper iframe {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
+    border: 0;
+    background-color: var(--map-iframe-bg);
   }
 
   .map-footer {
     margin-top: 10px;
-    font-family: system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--map-footer);
     text-align: right;
   }
 
@@ -416,6 +437,7 @@
       </div>
       <div class="iframe-wrapper">
         <iframe
+          id="threatFrame"
           src="https://cybermap.kaspersky.com/en/widget/dynamic/dark"
           title="Live global cyber threat map"
           frameborder="0"
@@ -675,6 +697,21 @@
     let rt;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { init(); if (reduceMotion) staticRender(); }, 200); });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
+  })();
+  </script>
+
+  <script>
+  /* Match the Kaspersky threat map to the site's light/dark theme */
+  (function () {
+    const frame = document.getElementById('threatFrame');
+    if (!frame) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function setMapTheme() {
+      const url = 'https://cybermap.kaspersky.com/en/widget/dynamic/' + (mq.matches ? 'dark' : 'light');
+      if (frame.getAttribute('src') !== url) frame.setAttribute('src', url);
+    }
+    setMapTheme();
+    mq.addEventListener('change', setMapTheme);
   })();
   </script>
 </body>
