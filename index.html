@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTU Cybersecurity Society</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #14161a;
+    --muted: #565b64;
+    --blue: #1f5bff;
+    --card-border: rgba(20, 22, 26, 0.12);
+    --card-hover-border: #1f5bff;
+    --card-bg: transparent;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0a0a;
+      --text: #f2f4f7;
+      --muted: #9aa1ac;
+      --blue: #4d8bff;
+      --card-border: rgba(242, 244, 247, 0.14);
+      --card-hover-border: #4d8bff;
+      --card-bg: transparent;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Hamburger button */
+  .menu-toggle {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 30;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.18s ease;
+  }
+
+  .menu-toggle:hover,
+  .menu-toggle:focus-visible { border-color: var(--blue); outline: none; }
+
+  .menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--blue);
+    border-radius: 2px;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Slide-in panel */
+  .menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 25;
+    height: 100dvh;
+    width: min(280px, 80vw);
+    background: var(--bg);
+    border-right: 1px solid var(--card-border);
+    padding: 5.5rem 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transform: translateX(-100%);
+    transition: transform 0.26s ease;
+  }
+
+  .menu-panel.open { transform: translateX(0); }
+
+  .menu-panel a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.15rem;
+    padding: 0.7rem 0.75rem;
+    border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .menu-panel a:hover,
+  .menu-panel a:focus-visible {
+    color: var(--blue);
+    background: var(--card-border);
+    outline: none;
+  }
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.26s ease, visibility 0.26s ease;
+  }
+
+  .menu-overlay.open { opacity: 1; visibility: visible; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: clamp(3rem, 9vh, 7rem) 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  h1 {
+    color: var(--blue);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 6vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    line-height: 1.55;
+    margin-top: 1.15rem;
+    max-width: 60ch;
+  }
+
+  .cards {
+    margin-top: clamp(2.5rem, 6vh, 4.5rem);
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    text-decoration: none;
+    color: inherit;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.6rem 1.5rem 1.75rem;
+    min-height: 150px;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .card:hover,
+  .card:focus-visible {
+    border-color: var(--card-hover-border);
+    transform: translateY(-3px);
+    outline: none;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .card-desc {
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.45;
+    margin-top: 0.55rem;
+  }
+
+  .card-arrow {
+    margin-top: auto;
+    padding-top: 1rem;
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  footer {
+    flex-shrink: 0;
+    background: var(--blue);
+    color: #ffffff;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .socials {
+    display: flex;
+    gap: 1.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .socials a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    opacity: 0.92;
+    transition: opacity 0.15s ease;
+  }
+
+  .socials a:hover,
+  .socials a:focus-visible { opacity: 1; text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    .cards { grid-template-columns: 1fr; }
+    .card { min-height: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: border-color 0.18s ease; }
+    .card:hover, .card:focus-visible { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="menuPanel" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="menu-panel" id="menuPanel" aria-label="Site">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="about.html">About</a>
+    <a href="team.html">Meet the team</a>
+  </nav>
+
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <main>
+    <h1>MTU Cybersecurity Society</h1>
+    <p class="tagline">Cybersecurity Society at MTU is a community for students interested in cybersecurity, ethical hacking, offensive security, and cryptography. Join us to learn, collaborate, and explore the world of digital security.</p>
+
+    <nav class="cards" aria-label="Main">
+      <a class="card" href="events.html">
+        <span class="card-title">Events</span>
+        <span class="card-desc">Workshops, CTFs, and talks. See what's coming up.</span>
+        <span class="card-arrow">View events &rarr;</span>
+      </a>
+      <a class="card" href="about.html">
+        <span class="card-title">About</span>
+        <span class="card-desc">Who we are and what the society is about.</span>
+        <span class="card-arrow">Learn more &rarr;</span>
+      </a>
+      <a class="card" href="team.html">
+        <span class="card-title">Meet the team</span>
+        <span class="card-desc">The committee running the society this year.</span>
+        <span class="card-arrow">See the team &rarr;</span>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="socials">
+      <a href="https://discord.gg/QPmRm7kuBN" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      <a href="https://www.instagram.com/mtu_cybersec_cork/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+      <a href="https://www.linkedin.com/company/mtu-cybersecurity-society/" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('menuToggle');
+    const panel = document.getElementById('menuPanel');
+    const overlay = document.getElementById('menuOverlay');
+
+    function setMenu(open) {
+      panel.classList.toggle('open', open);
+      overlay.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+
+    toggle.addEventListener('click', () => setMenu(!panel.classList.contains('open')));
+    overlay.addEventListener('click', () => setMenu(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  </script>
+</body>
+</html>
