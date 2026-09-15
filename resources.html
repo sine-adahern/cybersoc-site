@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About — MTU Cybersecurity Society</title>
+<title>Resources — MTU Cybersecurity Society</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -176,67 +176,6 @@
     max-width: 60ch;
   }
 
-  .intro {
-    margin-top: clamp(2.5rem, 6vh, 4rem);
-    max-width: 68ch;
-    text-align: left;
-  }
-
-  .intro h2 {
-    color: var(--blue);
-    font-weight: 600;
-    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
-    letter-spacing: -0.01em;
-    margin-bottom: 1rem;
-  }
-
-  .intro h2:not(:first-child) {
-    margin-top: clamp(2rem, 5vh, 2.75rem);
-  }
-
-  .intro p {
-    color: var(--text);
-    font-size: clamp(1rem, 2vw, 1.1rem);
-    line-height: 1.7;
-  }
-
-  .intro p + p {
-    margin-top: 1rem;
-  }
-
-  .intro ul {
-    margin: 1.1rem 0 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-  }
-
-  .intro li {
-    position: relative;
-    padding-left: 1.6rem;
-    color: var(--text);
-    font-size: clamp(1rem, 2vw, 1.1rem);
-    line-height: 1.7;
-  }
-
-  .intro li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.65em;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--blue);
-  }
-
-  .intro li strong {
-    color: var(--text);
-    font-weight: 600;
-  }
-
   footer {
     position: relative;
     z-index: 1;
@@ -265,6 +204,100 @@
 
   .socials a:hover,
   .socials a:focus-visible { opacity: 1; text-decoration: underline; }
+
+  /* Cyber threat map */
+  :root {
+    --map-bg: #eef1f7;
+    --map-border: rgba(20, 22, 26, 0.14);
+    --map-inner-border: rgba(20, 22, 26, 0.10);
+    --map-iframe-bg: #eef1f7;
+    --map-footer: #6b7280;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --map-bg: #0b0f19;
+      --map-border: #1e293b;
+      --map-inner-border: #0f172a;
+      --map-iframe-bg: #000;
+      --map-footer: #64748b;
+    }
+  }
+
+  .threat-map-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1040px;
+    margin: clamp(2.5rem, 6vh, 4rem) auto 0;
+    background-color: var(--map-bg);
+    border: 1px solid var(--map-border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.3);
+  }
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .map-header h3 {
+    margin: 0;
+    color: var(--blue);
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+  }
+
+  .live-pulse {
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: blink 1.5s infinite ease-in-out;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+
+  .iframe-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;            /* square on phones */
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid var(--map-inner-border);
+  }
+
+  @media (min-width: 720px) {
+    .iframe-wrapper { aspect-ratio: 16 / 9; }  /* rectangular on larger screens */
+  }
+
+  .iframe-wrapper iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background-color: var(--map-iframe-bg);
+  }
+
+  .map-footer {
+    margin-top: 10px;
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 0.75rem;
+    color: var(--map-footer);
+    text-align: right;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-pulse { animation: none; opacity: 0.9; }
+  }
 </style>
 </head>
 <body>
@@ -277,32 +310,37 @@
   <nav class="menu-panel" id="menuPanel" aria-label="Site">
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
-    <a href="about.html" aria-current="page">About</a>
-    <a href="resources.html">Resources</a>
+    <a href="about.html">About</a>
+    <a href="resources.html" aria-current="page">Resources</a>
     <a href="team.html">Meet the team</a>
   </nav>
 
   <div class="menu-overlay" id="menuOverlay"></div>
 
   <main>
-    <h1>About</h1>
-    <p class="tagline">Who we are, and the story behind bringing the MTU Cybersecurity Society back to life.</p>
+    <h1>Resources</h1>
+    <p class="tagline">Live threat intelligence and tools for staying on top of what's happening in cybersecurity.</p>
 
-    <section class="intro" aria-labelledby="about-heading">
-      <h2 id="about-heading">How It Came About</h2>
-      <p>When we started at MTU, the Cybersecurity Society technically already existed — but only on paper. Its previous board had finished their masters and moved on without leaving a legacy behind them: no handover, no committee, no plan for who came next. The society had been dormant for close to a year.</p>
-      <p>Cybersecurity is our degree and our genuine interest, and it seemed like a waste that a university with MTU's cyber credentials didn't have a student community to match. So alongside a group of our peers, we set out to bring it back.</p>
-      <p>Rebuilding it meant starting from the ground up:</p>
-      <ul>
-        <li><strong>Learning from the people who came before.</strong> We tracked down and met with former members to understand what the society had been, what had worked, and what had caused it to stall — so we wouldn't repeat the same mistake of building something that couldn't outlive us.</li>
-        <li><strong>Getting the university behind us.</strong> We liaised with MTU faculty and the Head of the Computer Science Department to re-establish the society properly and make sure it had institutional support.</li>
-        <li><strong>Putting a real committee in place.</strong> We held an AGM, elected a full board, and gave every role a clear owner.</li>
-        <li><strong>Starting to run events again.</strong> CTFs, industry talks, hackathons, and a space for people to actually turn up to.</li>
-      </ul>
-      <p>We were elected to the committee, and within a few months the society went from inactive to sending students onto panels at a global telecoms conference.</p>
-      <p>MTU is one of Ireland's leading cybersecurity hubs — home to Cork's Nimbus Research Centre, its national Cyber Range and prototyping labs, dedicated cyber degrees, and the &euro;7M Cyber Innovate programme. The society exists to bring that world within reach of students: hands-on skills, CTFs, and real connections to Ireland's cyber industry.</p>
-      <p>At its heart, though, it's about people. It's a space where students connect, collaborate, and grow together, with no experience required — from complete beginners to seasoned hackers. A community built on curiosity, teamwork, and a shared drive to learn.</p>
-    </section>
+    <!-- Cyber Threat Map -->
+    <div class="threat-map-card">
+      <div class="map-header">
+        <span class="live-pulse"></span>
+        <h3>LIVE GLOBAL THREAT METRICS</h3>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe
+          id="threatFrame"
+          src="https://cybermap.kaspersky.com/en/widget/dynamic/dark"
+          title="Live global cyber threat map"
+          frameborder="0"
+          scrolling="no"
+          loading="lazy">
+        </iframe>
+      </div>
+      <div class="map-footer">
+        <p>Telemetry stream provided via global sensor networks.</p>
+      </div>
+    </div>
   </main>
 
   <footer>
@@ -571,6 +609,21 @@
     let rt;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { init(); if (reduceMotion) staticRender(); }, 200); });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
+  })();
+  </script>
+
+  <script>
+  /* Match the Kaspersky threat map to the site's light/dark theme */
+  (function () {
+    const frame = document.getElementById('threatFrame');
+    if (!frame) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function setMapTheme() {
+      const url = 'https://cybermap.kaspersky.com/en/widget/dynamic/' + (mq.matches ? 'dark' : 'light');
+      if (frame.getAttribute('src') !== url) frame.setAttribute('src', url);
+    }
+    setMapTheme();
+    mq.addEventListener('change', setMapTheme);
   })();
   </script>
 </body>

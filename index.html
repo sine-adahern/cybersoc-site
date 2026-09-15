@@ -195,7 +195,7 @@
     margin-top: clamp(2.5rem, 6vh, 4.5rem);
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 1.25rem;
   }
 
@@ -285,100 +285,6 @@
     .card { min-height: 0; }
   }
 
-  /* Cyber threat map */
-  :root {
-    --map-bg: #eef1f7;
-    --map-border: rgba(20, 22, 26, 0.14);
-    --map-inner-border: rgba(20, 22, 26, 0.10);
-    --map-iframe-bg: #eef1f7;
-    --map-footer: #6b7280;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --map-bg: #0b0f19;
-      --map-border: #1e293b;
-      --map-inner-border: #0f172a;
-      --map-iframe-bg: #000;
-      --map-footer: #64748b;
-    }
-  }
-
-  .threat-map-card {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 1040px;
-    margin: clamp(2.5rem, 6vh, 4rem) auto 0;
-    background-color: var(--map-bg);
-    border: 1px solid var(--map-border);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.3);
-  }
-
-  .map-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .map-header h3 {
-    margin: 0;
-    color: var(--blue);
-    font-family: 'Outfit', system-ui, sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 2px;
-  }
-
-  .live-pulse {
-    width: 8px;
-    height: 8px;
-    background-color: #ef4444;
-    border-radius: 50%;
-    animation: blink 1.5s infinite ease-in-out;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 1; }
-  }
-
-  .iframe-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;            /* square on phones */
-    overflow: hidden;
-    border-radius: 6px;
-    border: 1px solid var(--map-inner-border);
-  }
-
-  @media (min-width: 720px) {
-    .iframe-wrapper { aspect-ratio: 16 / 9; }  /* rectangular on larger screens */
-  }
-
-  .iframe-wrapper iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background-color: var(--map-iframe-bg);
-  }
-
-  .map-footer {
-    margin-top: 10px;
-    font-family: 'Outfit', system-ui, sans-serif;
-    font-size: 0.75rem;
-    color: var(--map-footer);
-    text-align: right;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .live-pulse { animation: none; opacity: 0.9; }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .card { transition: border-color 0.18s ease; }
     .card:hover, .card:focus-visible { transform: none; }
@@ -396,6 +302,7 @@
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
     <a href="about.html">About</a>
+    <a href="resources.html">Resources</a>
     <a href="team.html">Meet the team</a>
   </nav>
 
@@ -427,28 +334,12 @@
         <span class="card-desc">The committee running the society this year.</span>
         <span class="card-arrow">See the team &rarr;</span>
       </a>
+      <a class="card" href="resources.html">
+        <span class="card-title">Resources</span>
+        <span class="card-desc">Live threat intel and other tools worth knowing about.</span>
+        <span class="card-arrow">View resources &rarr;</span>
+      </a>
     </nav>
-
-    <!-- Cyber Threat Map -->
-    <div class="threat-map-card">
-      <div class="map-header">
-        <span class="live-pulse"></span>
-        <h3>LIVE GLOBAL THREAT METRICS</h3>
-      </div>
-      <div class="iframe-wrapper">
-        <iframe
-          id="threatFrame"
-          src="https://cybermap.kaspersky.com/en/widget/dynamic/dark"
-          title="Live global cyber threat map"
-          frameborder="0"
-          scrolling="no"
-          loading="lazy">
-        </iframe>
-      </div>
-      <div class="map-footer">
-        <p>Telemetry stream provided via global sensor networks.</p>
-      </div>
-    </div>
   </main>
 
   <footer>
@@ -717,21 +608,6 @@
     let rt;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { init(); if (reduceMotion) staticRender(); }, 200); });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
-  })();
-  </script>
-
-  <script>
-  /* Match the Kaspersky threat map to the site's light/dark theme */
-  (function () {
-    const frame = document.getElementById('threatFrame');
-    if (!frame) return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    function setMapTheme() {
-      const url = 'https://cybermap.kaspersky.com/en/widget/dynamic/' + (mq.matches ? 'dark' : 'light');
-      if (frame.getAttribute('src') !== url) frame.setAttribute('src', url);
-    }
-    setMapTheme();
-    mq.addEventListener('change', setMapTheme);
   })();
   </script>
 </body>
