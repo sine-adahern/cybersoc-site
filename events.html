@@ -135,76 +135,55 @@
 
   /* Site search */
   .site-search {
-    position: fixed;
-    top: 1.25rem;
-    right: 1.25rem;
-    z-index: 30;
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin: 1.75rem auto 0;
   }
 
-  .search-toggle {
-    width: 46px;
-    height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    cursor: pointer;
-    padding: 0;
-    transition: border-color 0.18s ease;
-  }
-
-  .search-toggle:hover,
-  .search-toggle:focus-visible { border-color: var(--blue); outline: none; }
-
-  .search-toggle svg {
-    width: 19px;
-    height: 19px;
-    stroke: var(--blue);
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    stroke: var(--muted);
     fill: none;
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-  }
-
-  .search-panel {
-    position: absolute;
-    top: 54px;
-    right: 0;
-    width: min(360px, 88vw);
-    background: var(--bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-6px);
-    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
-    overflow: hidden;
-  }
-
-  .site-search.open .search-panel {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    pointer-events: none;
   }
 
   .search-input {
     width: 100%;
-    border: none;
-    border-bottom: 1px solid var(--card-border);
-    background: transparent;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
     color: var(--text);
     font-family: inherit;
     font-size: 1rem;
-    padding: 0.9rem 1rem;
+    padding: 0.9rem 1rem 0.9rem 2.65rem;
     outline: none;
+    transition: border-color 0.18s ease;
   }
 
+  .search-input:focus { border-color: var(--blue); }
+
   .search-results {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
     max-height: min(60vh, 420px);
     overflow-y: auto;
+    text-align: left;
+    z-index: 30;
   }
 
   .search-result {
@@ -497,19 +476,15 @@
 
   <div class="menu-overlay" id="menuOverlay"></div>
 
-  <div class="site-search" id="siteSearch">
-    <button class="search-toggle" id="searchToggle" aria-expanded="false" aria-controls="searchPanel" aria-label="Search site">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    </button>
-    <div class="search-panel" id="searchPanel">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search the site&hellip;" autocomplete="off" aria-label="Search the site">
-      <div class="search-results" id="searchResults" role="listbox" hidden></div>
-    </div>
-  </div>
-
   <main>
     <h1>Events</h1>
     <p class="tagline">The story so far. From bringing the society back to life to sending students onto a global stage, here's what we've been up to.</p>
+
+    <div class="site-search" id="siteSearch">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search the site&hellip;" autocomplete="off" aria-label="Search the site">
+      <div class="search-results" id="searchResults" role="listbox" hidden></div>
+    </div>
 
     <section class="intro" aria-labelledby="intro-heading">
       <h2 id="intro-heading">The Story So Far</h2>
