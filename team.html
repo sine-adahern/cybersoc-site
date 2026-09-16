@@ -133,6 +133,129 @@
 
   .menu-overlay.open { opacity: 1; visibility: visible; }
 
+  /* Site search */
+  .site-search {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 30;
+  }
+
+  .search-toggle {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 0.18s ease;
+  }
+
+  .search-toggle:hover,
+  .search-toggle:focus-visible { border-color: var(--blue); outline: none; }
+
+  .search-toggle svg {
+    width: 19px;
+    height: 19px;
+    stroke: var(--blue);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .search-panel {
+    position: absolute;
+    top: 54px;
+    right: 0;
+    width: min(360px, 88vw);
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+    overflow: hidden;
+  }
+
+  .site-search.open .search-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .search-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.9rem 1rem;
+    outline: none;
+  }
+
+  .search-results {
+    max-height: min(60vh, 420px);
+    overflow-y: auto;
+  }
+
+  .search-result {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--text);
+    border-top: 1px solid var(--card-border);
+    transition: background 0.12s ease;
+  }
+
+  .search-result:first-child { border-top: none; }
+
+  .search-result:hover,
+  .search-result:focus-visible,
+  .search-result.active { background: var(--card-border); outline: none; }
+
+  .search-result-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--blue);
+  }
+
+  .search-result-page {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-left: 0.45rem;
+  }
+
+  .search-result-snippet {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    line-height: 1.45;
+  }
+
+  .search-result mark {
+    background: rgba(31, 91, 255, 0.22);
+    color: inherit;
+    border-radius: 3px;
+  }
+
+  .search-empty {
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
   html, body { height: 100%; }
 
   body {
@@ -316,6 +439,16 @@
 
   <div class="menu-overlay" id="menuOverlay"></div>
 
+  <div class="site-search" id="siteSearch">
+    <button class="search-toggle" id="searchToggle" aria-expanded="false" aria-controls="searchPanel" aria-label="Search site">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
+    <div class="search-panel" id="searchPanel">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search the site&hellip;" autocomplete="off" aria-label="Search the site">
+      <div class="search-results" id="searchResults" role="listbox" hidden></div>
+    </div>
+  </div>
+
   <main>
     <h1>Meet the team</h1>
     <p class="tagline">The committee running the society this year.</p>
@@ -324,27 +457,27 @@
       <h2 id="committee-heading">The committee</h2>
       <p>Five roles, five people, all elected by the members.</p>
       <div class="team-grid">
-        <div class="member">
+        <div class="member" id="member-sinead-ahern">
           <div class="member-pic">Photo<br>coming soon</div>
           <div class="member-name">Sinead Ahern</div>
           <div class="member-role">Chairperson</div>
         </div>
-        <div class="member">
+        <div class="member" id="member-nikola-ksevi">
           <div class="member-pic">Photo<br>coming soon</div>
           <div class="member-name">Nikola Ksevi</div>
           <div class="member-role">Vice Chairperson</div>
         </div>
-        <div class="member">
+        <div class="member" id="member-maxwell-oflynn">
           <div class="member-pic">Photo<br>coming soon</div>
           <div class="member-name">Maxwell O'Flynn</div>
           <div class="member-role">Treasurer</div>
         </div>
-        <div class="member">
+        <div class="member" id="member-mikolaj-wroblewski">
           <div class="member-pic">Photo<br>coming soon</div>
           <div class="member-name">Mikolaj Wroblewski</div>
           <div class="member-role">Events Officer</div>
         </div>
-        <div class="member">
+        <div class="member" id="member-valeriia-kononenko">
           <div class="member-pic">Photo<br>coming soon</div>
           <div class="member-name">Valeriia Kononenko</div>
           <div class="member-role">PR Officer</div>
@@ -629,5 +762,7 @@
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
   })();
   </script>
+  <script src="js/search-data.js"></script>
+  <script src="js/search.js"></script>
 </body>
 </html>
