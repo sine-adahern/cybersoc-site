@@ -465,15 +465,6 @@
 
   .feed-source a { color: var(--blue); }
 
-  .feed-list {
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid var(--map-inner-border);
-    max-height: 480px;
-    overflow-y: auto;
-    border-radius: 6px;
-  }
-
   .feed-status {
     padding: 1.5rem 0.5rem;
     text-align: center;
@@ -482,30 +473,6 @@
   }
 
   .feed-error a { color: var(--blue); }
-
-  .feed-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 0.85rem 0.6rem;
-    background: none;
-    border: 0;
-    border-bottom: 1px solid var(--map-inner-border);
-    color: var(--text);
-    font-family: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-
-  .feed-row:last-child { border-bottom: 0; }
-
-  .feed-row:hover,
-  .feed-row:focus-visible {
-    background: var(--row-hover);
-    outline: none;
-  }
 
   .sev-dot {
     width: 9px;
@@ -525,45 +492,65 @@
   .sev-dot.sev-unknown, .feed-sev-label.sev-unknown { color: var(--sev-unknown); }
   .sev-dot.sev-unknown { background: var(--sev-unknown); }
 
-  .feed-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    flex: 1;
-  }
-
-  .feed-id {
-    font-weight: 600;
-    font-size: 0.92rem;
-  }
-
-  .feed-desc {
-    color: var(--muted);
-    font-size: 0.82rem;
-    line-height: 1.4;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .feed-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-    flex-shrink: 0;
-  }
-
   .feed-sev-label {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.03em;
   }
 
-  .feed-time {
-    color: var(--map-footer);
-    font-size: 0.72rem;
+  .threat-map-wrap {
+    position: relative;
+    border-top: 1px solid var(--map-inner-border);
+    padding-top: 10px;
+  }
+
+  .threat-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    background: var(--map-bg);
+  }
+
+  .map-land {
+    fill: var(--map-inner-border);
+    stroke: var(--map-border);
+    stroke-width: 0.6;
+  }
+
+  .map-marker {
+    fill: currentColor;
+    stroke: var(--map-bg);
+    stroke-width: 1;
+    cursor: pointer;
+    transition: r 0.15s ease, filter 0.15s ease;
+  }
+
+  .map-marker:hover,
+  .map-marker:focus-visible {
+    outline: none;
+    filter: drop-shadow(0 0 5px currentColor);
+  }
+
+  .map-marker.sev-critical { color: var(--sev-critical); }
+  .map-marker.sev-high { color: var(--sev-high); }
+  .map-marker.sev-medium { color: var(--sev-medium); }
+  .map-marker.sev-low { color: var(--sev-low); }
+  .map-marker.sev-unknown { color: var(--sev-unknown); }
+
+  .map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin-top: 10px;
+  }
+
+  .map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--muted);
   }
 
   .map-footer {
@@ -572,10 +559,6 @@
     font-size: 0.75rem;
     color: var(--map-footer);
     text-align: right;
-  }
-
-  @media (max-width: 560px) {
-    .feed-desc { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -725,9 +708,14 @@
         <span class="live-pulse"></span>
         <h3>LIVE EXPLOITED VULNERABILITIES</h3>
       </div>
-      <p class="feed-source">Pulled live from the <a href="https://nvd.nist.gov/" target="_blank" rel="noopener">National Vulnerability Database</a>, filtered to CVEs on <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">CISA's Known Exploited Vulnerabilities catalog</a>. Click an entry for details.</p>
-      <div class="feed-list" id="feedList" aria-live="polite">
-        <p class="feed-status">Loading latest entries&hellip;</p>
+      <p class="feed-source">Pulled live from the <a href="https://nvd.nist.gov/" target="_blank" rel="noopener">National Vulnerability Database</a>, filtered to CVEs on <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">CISA's Known Exploited Vulnerabilities catalog</a>. Marker positions are illustrative, not the vulnerabilities' real points of origin. Click a marker for details.</p>
+      <div class="threat-map-wrap">
+        <svg id="threatMap" class="threat-map" viewBox="0 0 960 500" role="img" aria-label="World map with markers for recently exploited vulnerabilities">
+          <g id="mapCountries"></g>
+          <g id="mapMarkers"></g>
+        </svg>
+        <p class="feed-status" id="mapStatus" aria-live="polite">Loading latest entries&hellip;</p>
+        <div class="map-legend" id="mapLegend"></div>
       </div>
       <div class="map-footer">
         <p id="feedUpdated"></p>
@@ -1010,22 +998,76 @@
   })();
   </script>
 
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
   <script>
-  /* Live exploited-vulnerabilities feed, sourced from the NVD API (CISA KEV-flagged CVEs) */
+  /* Live exploited-vulnerabilities world map, sourced from the NVD API (CISA KEV-flagged CVEs) */
   (function () {
     const NVD_ENDPOINT = 'https://services.nvd.nist.gov/rest/json/cves/2.0';
+    const WORLD_ATLAS_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
     const CACHE_KEY = 'kevFeedCacheV1';
     const CACHE_TTL = 5 * 60 * 1000;
     const REFRESH_INTERVAL = 10 * 60 * 1000;
     const WINDOW_DAYS = 30;
+    const MAP_W = 960, MAP_H = 500;
 
-    const listEl = document.getElementById('feedList');
+    const svgEl = document.getElementById('threatMap');
+    const countriesG = document.getElementById('mapCountries');
+    const markersG = document.getElementById('mapMarkers');
+    const statusEl = document.getElementById('mapStatus');
+    const legendEl = document.getElementById('mapLegend');
     const updatedEl = document.getElementById('feedUpdated');
     const overlay = document.getElementById('cveModalOverlay');
     const modal = document.getElementById('cveModal');
     const modalBody = document.getElementById('cveModalBody');
     const modalClose = document.getElementById('cveModalClose');
-    if (!listEl || !modal) return;
+    if (!svgEl || !modal || typeof d3 === 'undefined') return;
+
+    let landFeature = null;
+    let projection = d3.geoNaturalEarth1().scale(153).translate([MAP_W / 2, MAP_H / 2]);
+
+    async function loadWorld() {
+      const res = await fetch(WORLD_ATLAS_URL);
+      if (!res.ok) throw new Error('world-atlas request failed: ' + res.status);
+      const world = await res.json();
+      landFeature = topojson.feature(world, world.objects.land);
+      projection = d3.geoNaturalEarth1().fitSize([MAP_W, MAP_H], landFeature);
+      const pathGen = d3.geoPath(projection);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('class', 'map-land');
+      path.setAttribute('d', pathGen(landFeature));
+      countriesG.appendChild(path);
+    }
+
+    function hashString(str) {
+      let h = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+
+    function mulberry32(seed) {
+      let a = seed;
+      return function () {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function pickLocation(id) {
+      const rand = mulberry32(hashString(id));
+      let lon = 0, lat = 0;
+      for (let i = 0; i < 25; i++) {
+        lon = rand() * 360 - 180;
+        lat = rand() * 130 - 58;
+        if (!landFeature || d3.geoContains(landFeature, [lon, lat])) break;
+      }
+      return [lon, lat];
+    }
 
     function isoNoZone(d) { return d.toISOString().replace('Z', ''); }
 
@@ -1060,15 +1102,6 @@
       return (data.vulnerabilities || [])
         .map(v => v.cve)
         .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
-    }
-
-    function timeAgo(dateStr) {
-      const mins = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
-      if (mins < 1) return 'just now';
-      if (mins < 60) return mins + 'm ago';
-      const hours = Math.floor(mins / 60);
-      if (hours < 24) return hours + 'h ago';
-      return Math.floor(hours / 24) + 'd ago';
     }
 
     function getDescription(cve) {
@@ -1182,48 +1215,74 @@
     modalClose.addEventListener('click', closeModal);
     overlay.addEventListener('click', closeModal);
 
-    function renderList(cves) {
-      listEl.textContent = '';
-      if (!cves.length) {
-        listEl.appendChild(el('p', 'feed-status', 'No recently updated entries in the selected window.'));
-        return;
-      }
-      cves.slice(0, 30).forEach(cve => {
-        const cvss = getCvss(cve);
-        const sevClass = severityClass(cvss.severity);
+    function clearMarkers() { markersG.textContent = ''; }
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'feed-row';
-        btn.setAttribute('aria-haspopup', 'dialog');
-
-        btn.appendChild(el('span', 'sev-dot ' + sevClass));
-
-        const main = el('span', 'feed-main');
-        main.appendChild(el('span', 'feed-id', cve.id));
-        main.appendChild(el('span', 'feed-desc', getDescription(cve)));
-        btn.appendChild(main);
-
-        const meta = el('span', 'feed-meta');
-        meta.appendChild(el('span', 'feed-sev-label ' + sevClass,
-          cvss.severity + (cvss.score != null ? ' ' + cvss.score.toFixed(1) : '')));
-        meta.appendChild(el('span', 'feed-time', timeAgo(cve.lastModified)));
-        btn.appendChild(meta);
-
-        btn.addEventListener('click', () => openModal(cve));
-        listEl.appendChild(btn);
+    function renderLegend(cves) {
+      legendEl.textContent = '';
+      const present = new Set(cves.slice(0, 30).map(c => severityClass(getCvss(c).severity)));
+      [['sev-critical', 'Critical'], ['sev-high', 'High'], ['sev-medium', 'Medium'],
+       ['sev-low', 'Low'], ['sev-unknown', 'Unknown']].forEach(([cls, label]) => {
+        if (!present.has(cls)) return;
+        const item = el('span', 'map-legend-item');
+        item.appendChild(el('span', 'sev-dot ' + cls));
+        item.appendChild(document.createTextNode(label));
+        legendEl.appendChild(item);
       });
     }
 
+    function renderMap(cves) {
+      clearMarkers();
+      if (!cves.length) {
+        statusEl.hidden = false;
+        statusEl.className = 'feed-status';
+        statusEl.textContent = 'No recently updated entries in the selected window.';
+        legendEl.textContent = '';
+        return;
+      }
+      statusEl.hidden = true;
+      cves.slice(0, 30).forEach(cve => {
+        const cvss = getCvss(cve);
+        const sevClass = severityClass(cvss.severity);
+        const [lon, lat] = pickLocation(cve.id);
+        const coords = projection([lon, lat]);
+        if (!coords) return;
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', coords[0]);
+        circle.setAttribute('cy', coords[1]);
+        circle.setAttribute('r', 5);
+        circle.setAttribute('class', 'map-marker ' + sevClass);
+        circle.setAttribute('tabindex', '0');
+        circle.setAttribute('role', 'button');
+        circle.setAttribute('aria-haspopup', 'dialog');
+        circle.setAttribute('aria-label', cve.id + ', severity ' + cvss.severity + '. ' + getDescription(cve));
+
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = cve.id + ' — ' + cvss.severity + (cvss.score != null ? ' ' + cvss.score.toFixed(1) : '');
+        circle.appendChild(title);
+
+        circle.addEventListener('click', () => openModal(cve));
+        circle.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(cve); }
+        });
+
+        markersG.appendChild(circle);
+      });
+      renderLegend(cves);
+    }
+
     function showError() {
-      listEl.textContent = '';
-      const p = el('p', 'feed-status feed-error', 'Live feed unavailable right now — ');
+      clearMarkers();
+      legendEl.textContent = '';
+      statusEl.hidden = false;
+      statusEl.className = 'feed-status feed-error';
+      statusEl.textContent = '';
+      statusEl.appendChild(document.createTextNode('Live feed unavailable right now — '));
       const a = document.createElement('a');
       a.href = 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog';
       a.target = '_blank'; a.rel = 'noopener';
       a.textContent = 'view the CISA catalog directly';
-      p.appendChild(a);
-      listEl.appendChild(p);
+      statusEl.appendChild(a);
       updatedEl.textContent = '';
     }
 
@@ -1238,13 +1297,16 @@
           return;
         }
       }
-      renderList(items);
+      renderMap(items);
       updatedEl.textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) +
         ' · source: NVD, filtered to CISA KEV-listed CVEs';
     }
 
-    load();
-    setInterval(() => load(true), REFRESH_INTERVAL);
+    (async function start() {
+      try { await loadWorld(); } catch (e) { /* land silhouette optional — markers still render without it */ }
+      await load();
+      setInterval(() => load(true), REFRESH_INTERVAL);
+    })();
   })();
   </script>
   <script src="js/theme.js"></script>
