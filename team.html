@@ -4,11 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meet the team — MTU Cybersecurity Society</title>
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('site-theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
+    --bg: #0a0a0a;
+    --text: #f2f4f7;
+    --muted: #9aa1ac;
+    --blue: #4d8bff;
+    --card-border: rgba(242, 244, 247, 0.14);
+    --card-hover-border: #4d8bff;
+    --card-bg: transparent;
+  }
+
+  :root[data-theme="light"] {
     --bg: #ffffff;
     --text: #14161a;
     --muted: #565b64;
@@ -18,19 +37,7 @@
     --card-bg: transparent;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0a0a0a;
-      --text: #f2f4f7;
-      --muted: #9aa1ac;
-      --blue: #4d8bff;
-      --card-border: rgba(242, 244, 247, 0.14);
-      --card-hover-border: #4d8bff;
-      --card-bg: transparent;
-    }
-  }
-
-  html.hacked-mode {
+  :root.hacked-mode {
     --bg: #000000;
     --text: #00ff66;
     --muted: #00b34d;
@@ -146,6 +153,62 @@
   }
 
   .menu-overlay.open { opacity: 1; visibility: visible; }
+
+  /* Theme toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 30;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 0.18s ease;
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible { border-color: var(--blue); outline: none; }
+
+  .theme-toggle svg {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    stroke: var(--blue);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .theme-toggle .icon-sun {
+    fill: var(--blue);
+    stroke: none;
+    opacity: 0;
+    transform: scale(0.6) rotate(-90deg);
+  }
+
+  .theme-toggle .icon-moon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  :root[data-theme="light"] .icon-sun {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  :root[data-theme="light"] .icon-moon {
+    opacity: 0;
+    transform: scale(0.6) rotate(90deg);
+  }
 
   /* Site search */
   .site-search {
@@ -422,6 +485,11 @@
     <span></span><span></span><span></span>
   </button>
 
+  <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Switch to light theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+  </button>
+
   <nav class="menu-panel" id="menuPanel" aria-label="Site">
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
@@ -527,7 +595,7 @@
     const CHAMFER = 7;
 
     function themeColors() {
-      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const dark = document.documentElement.getAttribute('data-theme') !== 'light';
       traceColor = dark ? 'rgba(95,150,255,0.34)'  : 'rgba(31,91,255,0.34)';
       padColor   = dark ? 'rgba(120,170,255,0.55)' : 'rgba(31,91,255,0.55)';
       chipColor  = dark ? 'rgba(120,170,255,0.5)'  : 'rgba(31,91,255,0.5)';
@@ -748,9 +816,10 @@
 
     let rt;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { init(); if (reduceMotion) staticRender(); }, 200); });
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
+    window.addEventListener('sitethemechange', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
   })();
   </script>
+  <script src="js/theme.js"></script>
   <script src="js/search-data.js"></script>
   <script src="js/search.js"></script>
 </body>
