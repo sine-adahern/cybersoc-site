@@ -668,6 +668,49 @@
   }
 
   .cve-modal-links a:hover { text-decoration: underline; }
+
+  /* External resource link card */
+  .resource-link-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1040px;
+    margin: clamp(2rem, 5vh, 3rem) auto 0;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+    text-align: left;
+    transition: border-color 0.18s ease;
+  }
+
+  .resource-link-card:hover,
+  .resource-link-card:focus-within {
+    border-color: var(--card-hover-border);
+  }
+
+  .resource-link-card h3 {
+    color: var(--blue);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+
+  .resource-link-card p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .resource-link-card a {
+    display: inline-block;
+    margin-top: 0.9rem;
+    color: var(--blue);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .resource-link-card a:hover,
+  .resource-link-card a:focus-visible { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -720,6 +763,12 @@
       <div class="map-footer">
         <p id="feedUpdated"></p>
       </div>
+    </div>
+
+    <div class="resource-link-card">
+      <h3>picoCTF</h3>
+      <p>A free Capture The Flag platform built by Carnegie Mellon University. It's used to learn and practise practical security skills — binary exploitation, reverse engineering, web exploitation, cryptography, and forensics — through hands-on challenges rather than theory. It's a common starting point for anyone new to CTFs, and what we point beginners to before our own training sessions.</p>
+      <a href="https://picoctf.org/" target="_blank" rel="noopener">Visit picoCTF &rarr;</a>
     </div>
   </main>
 

@@ -140,5 +140,11 @@ window.SITE_SEARCH_INDEX = [
     page: "Resources",
     url: "resources.html",
     text: "A live feed of CVEs pulled from the National Vulnerability Database, filtered to CISA's Known Exploited Vulnerabilities catalog."
+  },
+  {
+    title: "picoCTF",
+    page: "Resources",
+    url: "resources.html",
+    text: "A free Capture The Flag platform built by Carnegie Mellon University, used to practise binary exploitation, reverse engineering, web exploitation, cryptography, and forensics through hands-on challenges. A common starting point for anyone new to CTFs."
   }
 ];
