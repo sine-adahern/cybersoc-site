@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meet the team — MTU Cybersecurity Society</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #14161a;
+    --muted: #565b64;
+    --blue: #1f5bff;
+    --card-border: rgba(20, 22, 26, 0.12);
+    --card-hover-border: #1f5bff;
+    --card-bg: transparent;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0a0a;
+      --text: #f2f4f7;
+      --muted: #9aa1ac;
+      --blue: #4d8bff;
+      --card-border: rgba(242, 244, 247, 0.14);
+      --card-hover-border: #4d8bff;
+      --card-bg: transparent;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Circuit-board background */
+  #chip {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* Hamburger button */
+  .menu-toggle {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 30;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.18s ease;
+  }
+
+  .menu-toggle:hover,
+  .menu-toggle:focus-visible { border-color: var(--blue); outline: none; }
+
+  .menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--blue);
+    border-radius: 2px;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Slide-in panel */
+  .menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 25;
+    height: 100dvh;
+    width: min(280px, 80vw);
+    background: var(--bg);
+    border-right: 1px solid var(--card-border);
+    padding: 5.5rem 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transform: translateX(-100%);
+    transition: transform 0.26s ease;
+  }
+
+  .menu-panel.open { transform: translateX(0); }
+
+  .menu-panel a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.15rem;
+    padding: 0.7rem 0.75rem;
+    border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .menu-panel a:hover,
+  .menu-panel a:focus-visible {
+    color: var(--blue);
+    background: var(--card-border);
+    outline: none;
+  }
+
+  .menu-panel a[aria-current="page"] {
+    color: var(--blue);
+    background: var(--card-border);
+  }
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.26s ease, visibility 0.26s ease;
+  }
+
+  .menu-overlay.open { opacity: 1; visibility: visible; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: clamp(3rem, 9vh, 7rem) 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  h1 {
+    color: var(--blue);
+    font-weight: 700;
+    font-size: clamp(3.15rem, 9vw, 6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    line-height: 1.55;
+    margin-top: 1.15rem;
+    max-width: 60ch;
+  }
+
+  .intro {
+    margin-top: clamp(2.5rem, 6vh, 4rem);
+    max-width: 68ch;
+    text-align: left;
+  }
+
+  .intro h2 {
+    color: var(--blue);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+    letter-spacing: -0.01em;
+    margin-bottom: 1rem;
+  }
+
+  .intro h2:not(:first-child) {
+    margin-top: clamp(2rem, 5vh, 2.75rem);
+  }
+
+  .intro p {
+    color: var(--text);
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    line-height: 1.7;
+  }
+
+  .intro p + p {
+    margin-top: 1rem;
+  }
+
+  /* Team grid */
+  .team-section {
+    margin-top: clamp(2.5rem, 6vh, 4rem);
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .team-section h2 {
+    color: var(--blue);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  .team-section > p {
+    color: var(--muted);
+    font-size: clamp(1rem, 2vw, 1.05rem);
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 2.25rem 1.5rem;
+    width: 100%;
+  }
+
+  .member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .member-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--card-border);
+    border: 1px dashed var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+  }
+
+  .member-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+
+  .member-role {
+    color: var(--blue);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+  }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    background: var(--blue);
+    color: #ffffff;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .socials {
+    display: flex;
+    gap: 1.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .socials a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    opacity: 0.92;
+    transition: opacity 0.15s ease;
+  }
+
+  .socials a:hover,
+  .socials a:focus-visible { opacity: 1; text-decoration: underline; }
+</style>
+</head>
+<body>
+  <canvas id="chip" aria-hidden="true"></canvas>
+
+  <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="menuPanel" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="menu-panel" id="menuPanel" aria-label="Site">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="about.html">About</a>
+    <a href="resources.html">Resources</a>
+    <a href="team.html" aria-current="page">Meet the team</a>
+  </nav>
+
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <main>
+    <h1>Meet the team</h1>
+    <p class="tagline">The committee running the society this year.</p>
+
+    <section class="team-section" aria-labelledby="committee-heading">
+      <h2 id="committee-heading">The committee</h2>
+      <p>Five roles, five people, all elected by the members.</p>
+      <div class="team-grid">
+        <div class="member">
+          <div class="member-pic">Photo<br>coming soon</div>
+          <div class="member-name">Sinead Ahern</div>
+          <div class="member-role">Chairperson</div>
+        </div>
+        <div class="member">
+          <div class="member-pic">Photo<br>coming soon</div>
+          <div class="member-name">Nikola Ksevi</div>
+          <div class="member-role">Vice Chairperson</div>
+        </div>
+        <div class="member">
+          <div class="member-pic">Photo<br>coming soon</div>
+          <div class="member-name">Maxwell O'Flynn</div>
+          <div class="member-role">Treasurer</div>
+        </div>
+        <div class="member">
+          <div class="member-pic">Photo<br>coming soon</div>
+          <div class="member-name">Mikolaj Wroblewski</div>
+          <div class="member-role">Events Officer</div>
+        </div>
+        <div class="member">
+          <div class="member-pic">Photo<br>coming soon</div>
+          <div class="member-name">Valeriia Kononenko</div>
+          <div class="member-role">PR Officer</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro" aria-labelledby="joining-heading">
+      <h2 id="joining-heading">How you actually end up on this page</h2>
+      <p>Joining is the easy bit. You sign up on mymtu.ie/societies, it's free, and there's no vetting or anything — you're in. Doesn't matter how many other societies you're already part of either.</p>
+      <p>The committee is a different story. That gets decided once a year at the AGM, where members vote in whoever's standing for each role — chairperson, treasurer, secretary, and whatever else the society needs that year. Any member can put their name forward, any member gets a vote, and that's basically it.</p>
+      <p>We ran ours properly this year — every role contested, nobody just handed a seat because the last committee liked them. Everyone above got voted in by the people who turned up.</p>
+      <p>So if you fancy seeing your own name on this page next year, join up, come to a few things, and put yourself forward when the AGM rolls around.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="socials">
+      <a href="https://discord.gg/QPmRm7kuBN" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      <a href="https://www.instagram.com/mtu_cybersec_cork/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+      <a href="https://www.linkedin.com/company/mtu-cybersecurity-society/" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('menuToggle');
+    const panel = document.getElementById('menuPanel');
+    const overlay = document.getElementById('menuOverlay');
+
+    function setMenu(open) {
+      panel.classList.toggle('open', open);
+      overlay.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+
+    toggle.addEventListener('click', () => setMenu(!panel.classList.contains('open')));
+    overlay.addEventListener('click', () => setMenu(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  </script>
+
+  <script>
+  /* Circuit-board background: PCB traces in side bands (top/bottom on phones) with blue/red/yellow pulses */
+  (function () {
+    const canvas = document.getElementById('chip');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const PALETTE = [
+      { r: 31,  g: 91,  b: 255 }, // blue
+      { r: 255, g: 59,  b: 71  }, // red
+      { r: 255, g: 194, b: 31  }, // yellow
+    ];
+
+    let W, H, DPR, cell, bandW, horizontal, paths = [], chips = [], pulses = [], base, mask;
+    let traceColor, padColor, chipColor;
+    const CHAMFER = 7;
+
+    function themeColors() {
+      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      traceColor = dark ? 'rgba(95,150,255,0.34)'  : 'rgba(31,91,255,0.34)';
+      padColor   = dark ? 'rgba(120,170,255,0.55)' : 'rgba(31,91,255,0.55)';
+      chipColor  = dark ? 'rgba(120,170,255,0.5)'  : 'rgba(31,91,255,0.5)';
+    }
+
+    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    function unit(a, b) { const d = dist(a, b) || 1; return { x: (b.x - a.x) / d, y: (b.y - a.y) / d }; }
+    function lerp(a, b, t) { return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }; }
+
+    function makePath(xMinCell, xMaxCell, yMinCell, yMaxCell) {
+      let cx = xMinCell + ((Math.random() * (xMaxCell - xMinCell)) | 0);
+      let cy = yMinCell + ((Math.random() * (yMaxCell - yMinCell)) | 0);
+      const pts = [{ x: cx * cell, y: cy * cell }];
+      const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      let d = dirs[(Math.random() * 4) | 0];
+      const steps = 5 + ((Math.random() * 11) | 0);
+      for (let i = 0; i < steps; i++) {
+        if (Math.random() > 0.5) {
+          const turns = d[0] !== 0 ? [[0, 1], [0, -1]] : [[1, 0], [-1, 0]];
+          d = turns[(Math.random() * 2) | 0];
+        }
+        const len = 1 + ((Math.random() * 4) | 0);
+        let nx = Math.max(xMinCell, Math.min(xMaxCell, cx + d[0] * len));
+        let ny = Math.max(yMinCell, Math.min(yMaxCell, cy + d[1] * len));
+        if (nx === cx && ny === cy) continue;
+        cx = nx; cy = ny;
+        pts.push({ x: cx * cell, y: cy * cell });
+      }
+      const simp = [pts[0]];
+      for (let i = 1; i < pts.length - 1; i++) {
+        const a = pts[i - 1], b = pts[i], c = pts[i + 1];
+        const cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        if (Math.abs(cross) > 0.01) simp.push(b);
+      }
+      simp.push(pts[pts.length - 1]);
+      if (simp.length < 2) return null;
+
+      const cp = [simp[0]];
+      for (let i = 1; i < simp.length - 1; i++) {
+        const A = simp[i - 1], V = simp[i], B = simp[i + 1];
+        const dIn = unit(A, V), dOut = unit(V, B);
+        const cIn = Math.min(CHAMFER, dist(A, V) / 2);
+        const cOut = Math.min(CHAMFER, dist(V, B) / 2);
+        cp.push({ x: V.x - dIn.x * cIn, y: V.y - dIn.y * cIn });
+        cp.push({ x: V.x + dOut.x * cOut, y: V.y + dOut.y * cOut });
+      }
+      cp.push(simp[simp.length - 1]);
+
+      const seg = []; let total = 0;
+      for (let i = 0; i < cp.length - 1; i++) { const l = dist(cp[i], cp[i + 1]); seg.push(l); total += l; }
+      return { pts: cp, seg, total, ends: [simp[0], simp[simp.length - 1]], vias: simp.slice(1, -1) };
+    }
+
+    function pointsBetween(path, a, b) {
+      const out = [], { pts, seg, total } = path;
+      a = Math.max(0, Math.min(total, a)); b = Math.max(0, Math.min(total, b));
+      if (b <= a) return out;
+      let acc = 0;
+      for (let i = 0; i < seg.length; i++) {
+        const s = acc, e = acc + seg[i];
+        if (b < s) break;
+        if (e < a) { acc = e; continue; }
+        const L = seg[i] || 1, from = Math.max(a, s), to = Math.min(b, e);
+        if (out.length === 0) out.push(lerp(pts[i], pts[i + 1], (from - s) / L));
+        out.push(lerp(pts[i], pts[i + 1], (to - s) / L));
+        acc = e;
+      }
+      return out;
+    }
+
+    function makeChip(xMin, xMax, yMin, yMax) {
+      const s = cell * (1.4 + Math.random());
+      const x = xMin + Math.random() * Math.max(1, (xMax - xMin - s));
+      const y = yMin + Math.random() * Math.max(1, (yMax - yMin - s));
+      return { x, y, s };
+    }
+
+    function drawChip(c, ch) {
+      c.strokeStyle = chipColor; c.fillStyle = padColor; c.lineWidth = 1.4;
+      c.strokeRect(ch.x, ch.y, ch.s, ch.s);
+      const legs = 3, gap = ch.s / (legs + 1), L = 7;
+      for (let i = 1; i <= legs; i++) {
+        const off = gap * i;
+        [[ch.x, ch.y + off, -1, 0], [ch.x + ch.s, ch.y + off, 1, 0],
+         [ch.x + off, ch.y, 0, -1], [ch.x + off, ch.y + ch.s, 0, 1]].forEach(([px, py, dx, dy]) => {
+          c.beginPath(); c.moveTo(px, py); c.lineTo(px + dx * L, py + dy * L); c.stroke();
+          c.beginPath(); c.arc(px + dx * L, py + dy * L, 2, 0, Math.PI * 2); c.fill();
+        });
+      }
+    }
+
+    function buildBase() {
+      base = document.createElement('canvas');
+      base.width = W * DPR; base.height = H * DPR;
+      const b = base.getContext('2d');
+      b.scale(DPR, DPR);
+      b.lineJoin = 'round'; b.lineCap = 'round'; b.lineWidth = 1.4;
+      b.strokeStyle = traceColor;
+      for (const p of paths) {
+        b.beginPath(); b.moveTo(p.pts[0].x, p.pts[0].y);
+        for (let i = 1; i < p.pts.length; i++) b.lineTo(p.pts[i].x, p.pts[i].y);
+        b.stroke();
+      }
+      b.fillStyle = padColor;
+      for (const p of paths) for (const v of p.vias) { b.beginPath(); b.arc(v.x, v.y, 2, 0, Math.PI * 2); b.fill(); }
+      b.strokeStyle = padColor; b.lineWidth = 1.4;
+      for (const p of paths) for (const e of p.ends) { b.beginPath(); b.arc(e.x, e.y, 4.3, 0, Math.PI * 2); b.stroke(); }
+      for (const ch of chips) drawChip(b, ch);
+    }
+
+    function buildMask() {
+      // Fade the bands into the page along whichever axis they run:
+      // top/bottom (vertical fade) on phones, left/right (horizontal fade) otherwise.
+      const axis = horizontal ? H : W;
+      const g = horizontal
+        ? ctx.createLinearGradient(0, 0, 0, H)
+        : ctx.createLinearGradient(0, 0, W, 0);
+      const fadeIn = bandW, fadeStart = bandW * 0.62;
+      g.addColorStop(0, 'rgba(0,0,0,1)');
+      g.addColorStop(Math.max(0, fadeStart / axis), 'rgba(0,0,0,1)');
+      g.addColorStop(fadeIn / axis, 'rgba(0,0,0,0)');
+      g.addColorStop((axis - fadeIn) / axis, 'rgba(0,0,0,0)');
+      g.addColorStop((axis - fadeStart) / axis, 'rgba(0,0,0,1)');
+      g.addColorStop(1, 'rgba(0,0,0,1)');
+      mask = g;
+    }
+
+    function init() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = Math.max(window.innerHeight, document.body.scrollHeight);
+      canvas.width = W * DPR; canvas.height = H * DPR;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      cell = 34;
+      // On phones, run the circuit bands across the top and bottom instead of the sides.
+      horizontal = W < 640;
+      const rows = Math.ceil(H / cell);
+      const cols = Math.ceil(W / cell);
+
+      paths = []; chips = [];
+
+      if (horizontal) {
+        bandW = Math.min(140, Math.max(80, H * 0.16));
+        const topMax = Math.floor(bandW / cell);
+        const bottomMin = Math.floor((H - bandW) / cell);
+        const perBand = Math.min(46, Math.max(12, Math.round((bandW * W) / 9000)));
+        for (let i = 0; i < perBand; i++) {
+          const t = makePath(0, cols, 0, topMax); if (t) paths.push(t);
+          const b = makePath(0, cols, bottomMin, rows); if (b) paths.push(b);
+        }
+        chips.push(makeChip(0, W, 0, bandW), makeChip(0, W, H - bandW, H));
+      } else {
+        bandW = Math.min(300, Math.max(180, W * 0.24));
+        const leftMax = Math.floor(bandW / cell);
+        const rightMin = Math.floor((W - bandW) / cell);
+        const perBand = Math.min(46, Math.max(12, Math.round((bandW * H) / 9000)));
+        for (let i = 0; i < perBand; i++) {
+          const l = makePath(0, leftMax, 0, rows); if (l) paths.push(l);
+          const r = makePath(rightMin, cols, 0, rows); if (r) paths.push(r);
+        }
+        chips.push(makeChip(0, bandW, 0, H), makeChip(W - bandW, W, 0, H));
+      }
+
+      themeColors(); buildBase(); buildMask();
+
+      pulses = [];
+      for (const path of paths) {
+        if (Math.random() > 0.6) continue;
+        pulses.push({
+          path, color: PALETTE[(Math.random() * PALETTE.length) | 0],
+          speed: 55 + Math.random() * 95, pos: Math.random() * path.total,
+          streak: 60 + Math.random() * 55,
+        });
+      }
+    }
+
+    const rgba = (c, a) => `rgba(${c.r},${c.g},${c.b},${a})`;
+
+    function drawPulse(p) {
+      const streak = pointsBetween(p.path, p.pos - p.streak, p.pos);
+      if (streak.length < 2) return;
+      const tail = streak[0], tip = streak[streak.length - 1];
+      const grad = ctx.createLinearGradient(tail.x, tail.y, tip.x, tip.y);
+      grad.addColorStop(0, rgba(p.color, 0));
+      grad.addColorStop(1, rgba(p.color, 0.95));
+      ctx.beginPath(); ctx.moveTo(streak[0].x, streak[0].y);
+      for (let i = 1; i < streak.length; i++) ctx.lineTo(streak[i].x, streak[i].y);
+      ctx.strokeStyle = grad; ctx.lineWidth = 2.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.shadowColor = rgba(p.color, 0.9); ctx.shadowBlur = 13; ctx.stroke();
+      ctx.beginPath(); ctx.arc(tip.x, tip.y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(p.color, 1); ctx.fill(); ctx.shadowBlur = 0;
+    }
+
+    function applyMask() {
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.fillStyle = mask; ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      ctx.clearRect(0, 0, W, H);
+      ctx.drawImage(base, 0, 0, W, H);
+      for (const p of pulses) { p.pos += p.speed * dt; if (p.pos - p.streak > p.path.total) p.pos = 0; drawPulse(p); }
+      applyMask();
+      requestAnimationFrame(frame);
+    }
+    function staticRender() {
+      ctx.clearRect(0, 0, W, H); ctx.drawImage(base, 0, 0, W, H);
+      for (const p of pulses) { p.pos = p.path.total * (0.3 + Math.random() * 0.5); drawPulse(p); }
+      applyMask();
+    }
+
+    init();
+    if (reduceMotion) staticRender(); else requestAnimationFrame(frame);
+
+    let rt;
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { init(); if (reduceMotion) staticRender(); }, 200); });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { themeColors(); buildBase(); if (reduceMotion) staticRender(); });
+  })();
+  </script>
+</body>
+</html>
