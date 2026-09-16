@@ -38,6 +38,14 @@
 
     let activeIndex = -1;
 
+    function triggerHackedEasterEgg() {
+      if (document.documentElement.classList.contains('hacked-mode')) return;
+      document.documentElement.classList.add('hacked-mode');
+      const chip = document.getElementById('chip');
+      if (chip) chip.classList.add('hacked-filter');
+      window.alert('mtucsflag{100}');
+    }
+
     function updateActive(items) {
       items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
       if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: 'nearest' });
@@ -74,6 +82,9 @@
       if (!q) {
         render([], '');
         return;
+      }
+      if (q === 'hacked') {
+        triggerHackedEasterEgg();
       }
       const matches = index
         .filter((entry) => entry.title.toLowerCase().includes(q) || entry.text.toLowerCase().includes(q))
